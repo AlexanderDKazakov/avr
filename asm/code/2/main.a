@@ -1,0 +1,27 @@
+; Hello World!\0
+
+; stack initialization 
+
+ldi r16, low(RAMEND)
+out spl, r16
+ldi r16, high(RAMEND)
+out sph, r16
+
+; String 'Hello World!\0'
+hw_string:
+  .db "Hello World!", 0x00
+
+ldi zl, LOW(2*(hw_string))
+ldi zh, HIGH(2*(hw_string))
+
+lpm r25, z
+ldi r20, '\0'
+
+main:
+  cp r25, r20
+  breq start
+  call putchar
+  lpm r25, z+
+
+  rjmp start
+

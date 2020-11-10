@@ -1,0 +1,12 @@
+
+.include "../../include/m328Pdef.inc"
+
+.org 0
+
+; stack
+ldi r16, 0b00100000
+out DDRB, r16
+out PortB, r16
+
+Start:
+  rjmp Start
