@@ -4,9 +4,9 @@
 .org 0
 
 ; stack
-ldi r16, 0b00100000
-out DDRB, r16
-out PortB, r16
+ldi r16, 0b00100000  ; 13 Digital 
+out DDRB, r16        ; 13 digital set to out
+out PortB, r16       ; 13 digital set to out
 
 Start:
   rjmp Start

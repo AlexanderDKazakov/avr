@@ -1,0 +1,3 @@
+# avra *.a # will create hex file
+
+# sudo avrdude -p m328p -c stk500v1 -b 115200 -P /dev/tty.usbmodem41 -F -U flash:w:main.a.hex  # will upload to the arduino
