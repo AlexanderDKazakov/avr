@@ -1,0 +1,66 @@
+; USART communication
+; This code does not work (yet)
+
+.include "../../include/m328Pdef.inc"
+
+#define OSC_FQ 16000000 ; 16MHz
+#define BAUD_RATE 19200 ; CHECK
+#define UBRR_VAL (OSC_FQ / (16*BAUD_RATE) - 1)
+
+.cseg
+.org 0  ; starting point
+
+message: .db "Hello World", 0
+
+Reset:
+  rjmp Init
+
+Init:
+; initialize the stack register
+  ldi r16, HIGH(RAMEND)
+  out SPH, r16
+  ldi r16, LOW(RAMEND)
+  out SPL, r16
+  ;
+  call InitUSART
+
+Write:
+  ldi ZL, LOW(message<<1)
+  ldi ZH, HIGH(message<<1)
+
+Loop:
+  lpm r16, Z+
+  cpi r16, 0
+  breq end
+  call Putchar
+  rjmp Loop
+
+End:
+  rjmp End
+
+; expects param in r0
+Putchar:
+  lds r16, UCSR0A
+  sbrs r16, UDRE0 ; skip if data register is empty
+  rjmp putchar
+  sts UDR0, r0
+  ret
+
+; for example before changing the USART settings
+WaitCharSent:
+  lds r16, UCSR0A
+  sbrs r16, TXC0
+  rjmp WaitCharSent
+  ret
+
+InitUSART:
+  ldi r16, HIGH(UBRR_VAL) & 0xF ; mask the high 4 bits, make sure they are set to 0 as they should 
+  sts UBRR0H, r16
+  ldi r16, LOW(UBRR_VAL)
+  sts UBRR0L, r16
+  ldi r16, (1<<UCSZ00) | (1<<UCSZ01) ; asynchronous USART, 8N1
+  sts UCSR0C, r16
+  ldi r16, (0<<RXEN0) | (1<<TXEN0)   ; enable trasmitter
+  sts UCSR0B, r16
+  ret
+
